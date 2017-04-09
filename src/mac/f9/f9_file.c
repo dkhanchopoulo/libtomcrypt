@@ -22,14 +22,14 @@
    @param cipher   The index of the cipher desired
    @param key      The secret key
    @param keylen   The length of the secret key (octets)
-   @param filename The name of the file you wish to f9
+   @param fname    The name of the file you wish to f9
    @param out      [out] Where the authentication tag is to be stored
    @param outlen   [in/out] The max size and resulting size of the authentication tag
    @return CRYPT_OK if successful, CRYPT_NOP if file support has been disabled
 */
 int f9_file(int cipher,
               const unsigned char *key, unsigned long keylen,
-              const char *filename,
+              const char *fname,
                     unsigned char *out, unsigned long *outlen)
 {
 #ifdef LTC_NO_FILE
@@ -41,16 +41,16 @@ int f9_file(int cipher,
    FILE *in;
    unsigned char *buf;
 
-   LTC_ARGCHK(key      != NULL);
-   LTC_ARGCHK(filename != NULL);
-   LTC_ARGCHK(out      != NULL);
-   LTC_ARGCHK(outlen   != NULL);
+   LTC_ARGCHK(key    != NULL);
+   LTC_ARGCHK(fname  != NULL);
+   LTC_ARGCHK(out    != NULL);
+   LTC_ARGCHK(outlen != NULL);
 
    if ((buf = XMALLOC(LTC_FILE_READ_BUFSIZE)) == NULL) {
       return CRYPT_MEM;
    }
 
-   in = fopen(filename, "rb");
+   in = fopen(fname, "rb");
    if (in == NULL) {
       err = CRYPT_FILE_NOTFOUND;
       goto LBL_ERR;
@@ -68,11 +68,18 @@ int f9_file(int cipher,
          goto LBL_ERR;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
-   fclose(in);
 
-   err = f9_done(&f9,    out, outlen);
+   if (fclose(in) != 0) {
+      err = CRYPT_ERROR;
+      goto LBL_ERR;
+   }
+
+   err = f9_done(&f9, out, outlen);
 
 LBL_ERR:
+#ifdef LTC_CLEAN_STACK
+   zeromem(&f9, sizeof(f9_state));
+#endif
    XFREE(buf);
    return err;
 #endif

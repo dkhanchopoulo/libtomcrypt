@@ -69,11 +69,18 @@ int pmac_file(int cipher,
          goto LBL_ERR;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
-   fclose(in);
+
+   if (fclose(in) != 0) {
+      err = CRYPT_ERROR;
+      goto LBL_ERR;
+   }
 
    err = pmac_done(&pmac, out, outlen);
 
 LBL_ERR:
+#ifdef LTC_CLEAN_STACK
+   zeromem(&pmac, sizeof(pmac_state));
+#endif
    XFREE(buf);
    return err;
 #endif

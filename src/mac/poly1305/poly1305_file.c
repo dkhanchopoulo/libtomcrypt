@@ -41,9 +41,20 @@ int poly1305_file(const char *fname, const unsigned char *key, unsigned long key
    LTC_ARGCHK(mac    != NULL);
    LTC_ARGCHK(maclen != NULL);
 
-   if ((in = fopen(fname, "rb")) == NULL)                   { return CRYPT_FILE_NOTFOUND; }
-   if ((buf = XMALLOC(LTC_FILE_READ_BUFSIZE)) == NULL)      { return CRYPT_MEM; }
-   if ((err = poly1305_init(&st, key, keylen)) != CRYPT_OK) { goto LBL_ERR; }
+   if ((buf = XMALLOC(LTC_FILE_READ_BUFSIZE)) == NULL) {
+      return CRYPT_MEM;
+   }
+
+   in = fopen(fname, "rb");
+   if (in == NULL) {
+      err = CRYPT_FILE_NOTFOUND;
+      goto LBL_ERR;
+   }
+
+   if ((err = poly1305_init(&st, key, keylen)) != CRYPT_OK) {
+      fclose(in);
+      goto LBL_ERR;
+   }
 
    do {
       x = fread(buf, 1, LTC_FILE_READ_BUFSIZE, in);
@@ -52,10 +63,12 @@ int poly1305_file(const char *fname, const unsigned char *key, unsigned long key
          goto LBL_ERR;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
-   if (fclose(in) != 0)  {
+
+   if (fclose(in) != 0) {
       err = CRYPT_ERROR;
       goto LBL_ERR;
    }
+
    err = poly1305_done(&st, mac, maclen);
 
 LBL_ERR:

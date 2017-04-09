@@ -68,11 +68,18 @@ int xcbc_file(int cipher,
          goto LBL_ERR;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
-   fclose(in);
+
+   if (fclose(in) != 0) {
+      err = CRYPT_ERROR;
+      goto LBL_ERR;
+   }
 
    err = xcbc_done(&xcbc, out, outlen);
 
 LBL_ERR:
+#ifdef LTC_CLEAN_STACK
+   zeromem(&xcbc, sizeof(xcbc_state));
+#endif
    XFREE(buf);
    return err;
 #endif

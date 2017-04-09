@@ -68,11 +68,18 @@ int omac_file(int cipher,
          goto LBL_ERR;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
-   fclose(in);
+
+   if (fclose(in) != 0) {
+      err = CRYPT_ERROR;
+      goto LBL_ERR;
+   }
 
    err = omac_done(&omac, out, outlen);
 
 LBL_ERR:
+#ifdef LTC_CLEAN_STACK
+   zeromem(&omac, sizeof(omac_state));
+#endif
    XFREE(buf);
    return err;
 #endif

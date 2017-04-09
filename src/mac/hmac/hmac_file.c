@@ -49,11 +49,7 @@ int hmac_file(int hash, const char *fname,
       return CRYPT_MEM;
    }
 
-   if((err = hash_is_valid(hash)) != CRYPT_OK) {
-       goto LBL_ERR;
-   }
-
-   if ((err = hmac_init(&hmac, hash, key, keylen)) != CRYPT_OK) {
+   if ((err = hash_is_valid(hash)) != CRYPT_OK) {
        goto LBL_ERR;
    }
 
@@ -63,12 +59,15 @@ int hmac_file(int hash, const char *fname,
       goto LBL_ERR;
    }
 
-   /* process the file contents */
+   if ((err = hmac_init(&hmac, hash, key, keylen)) != CRYPT_OK) {
+      fclose(in);
+      goto LBL_ERR;
+   }
+
    do {
       x = fread(buf, 1, LTC_FILE_READ_BUFSIZE, in);
       if ((err = hmac_process(&hmac, buf, (unsigned long)x)) != CRYPT_OK) {
-         /* we don't trap this error since we're already returning an error! */
-         fclose(in);
+         fclose(in); /* we don't trap this error since we're already returning an error! */
          goto LBL_ERR;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
@@ -78,17 +77,18 @@ int hmac_file(int hash, const char *fname,
       goto LBL_ERR;
    }
 
-   /* get final hmac */
    err = hmac_done(&hmac, out, outlen);
 
 LBL_ERR:
+#ifdef LTC_CLEAN_STACK
+   zeromem(&hmac, sizeof(hmac_state));
+#endif
    XFREE(buf);
    return err;
 #endif
 }
 
 #endif
-
 
 /* $Source$ */
 /* $Revision$ */
