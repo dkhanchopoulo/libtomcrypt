@@ -64,17 +64,19 @@ int xcbc_file(int cipher,
       x = fread(buf, 1, LTC_FILE_READ_BUFSIZE, in);
       if ((err = xcbc_process(&xcbc, buf, (unsigned long)x)) != CRYPT_OK) {
          fclose(in);
-         goto LBL_ERR;
+         goto LBL_CLEANBUF;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
 
    if (fclose(in) != 0) {
       err = CRYPT_ERROR;
-      goto LBL_ERR;
+      goto LBL_CLEANBUF;
    }
 
    err = xcbc_done(&xcbc, out, outlen);
 
+LBL_CLEANBUF:
+   zeromem(buf, LTC_FILE_READ_BUFSIZE);
 LBL_ERR:
 #ifdef LTC_CLEAN_STACK
    zeromem(&xcbc, sizeof(xcbc_state));

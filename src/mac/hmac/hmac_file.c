@@ -67,17 +67,19 @@ int hmac_file(int hash, const char *fname,
       x = fread(buf, 1, LTC_FILE_READ_BUFSIZE, in);
       if ((err = hmac_process(&hmac, buf, (unsigned long)x)) != CRYPT_OK) {
          fclose(in); /* we don't trap this error since we're already returning an error! */
-         goto LBL_ERR;
+         goto LBL_CLEANBUF;
       }
    } while (x == LTC_FILE_READ_BUFSIZE);
 
    if (fclose(in) != 0) {
       err = CRYPT_ERROR;
-      goto LBL_ERR;
+      goto LBL_CLEANBUF;
    }
 
    err = hmac_done(&hmac, out, outlen);
 
+LBL_CLEANBUF:
+   zeromem(buf, LTC_FILE_READ_BUFSIZE);
 LBL_ERR:
 #ifdef LTC_CLEAN_STACK
    zeromem(&hmac, sizeof(hmac_state));
