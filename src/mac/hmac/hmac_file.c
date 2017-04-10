@@ -20,16 +20,15 @@
 /**
   HMAC a file
   @param hash     The index of the hash you wish to use
-  @param fname    The name of the file you wish to HMAC
   @param key      The secret key
   @param keylen   The length of the secret key
+  @param fname    The name of the file you wish to HMAC
   @param out      [out] The HMAC authentication tag
   @param outlen   [in/out]  The max size and resulting size of the authentication tag
   @return CRYPT_OK if successful, CRYPT_NOP if file support has been disabled
 */
-int hmac_file(int hash, const char *fname,
-              const unsigned char *key, unsigned long keylen,
-                    unsigned char *out, unsigned long *outlen)
+int hmac_file(int hash, const unsigned char *key, unsigned long keylen,
+              const char *fname, unsigned char *out, unsigned long *outlen)
 {
 #ifdef LTC_NO_FILE
     return CRYPT_NOP;

@@ -35,7 +35,7 @@ int file_test(void)
       unsigned char exp_hmacsha256[32] = { 0xE4, 0x07, 0x74, 0x95, 0xF1, 0xF8, 0x5B, 0xB5, 0xF1, 0x4F, 0x7D, 0x4F, 0x59, 0x8E, 0x4B, 0xBC,
                                            0x8F, 0x68, 0xCF, 0xBA, 0x2E, 0xAD, 0xC4, 0x63, 0x9D, 0x7F, 0x02, 0x99, 0x8C, 0x08, 0xAC, 0xC0 };
       len = sizeof(buf);
-      if ((err = hmac_file(isha256, fname, key, 32, buf, &len)) != CRYPT_OK)    return err;
+      if ((err = hmac_file(isha256, key, 32, fname, buf, &len)) != CRYPT_OK)    return err;
       if (compare_testvector(buf, len, exp_hmacsha256, 32, "hmac_file", 1))     return 1;
    }
 #endif
@@ -75,7 +75,7 @@ int file_test(void)
    {
       unsigned char exp_poly1305[16]   = { 0xD0, 0xC7, 0xFB, 0x13, 0xA8, 0x87, 0x84, 0x23, 0x21, 0xCC, 0xA9, 0x43, 0x81, 0x18, 0x75, 0xBE };
       len = sizeof(buf);
-      if ((err = poly1305_file(fname, key, 32, buf, &len)) != CRYPT_OK)         return err;
+      if ((err = poly1305_file(key, 32, fname, buf, &len)) != CRYPT_OK)         return err;
       if (compare_testvector(buf, len, exp_poly1305, 16, "poly1305_file", 1))   return 1;
    }
 #endif

@@ -18,9 +18,8 @@ int hmac_memory_multi(int hash,
                 const unsigned char *key,  unsigned long keylen,
                       unsigned char *out,  unsigned long *outlen,
                 const unsigned char *in,   unsigned long inlen, ...);
-int hmac_file(int hash, const char *fname, const unsigned char *key,
-              unsigned long keylen,
-              unsigned char *dst, unsigned long *dstlen);
+int hmac_file(int hash, const unsigned char *key, unsigned long keylen,
+              const char *fname, unsigned char *dst, unsigned long *dstlen);
 #endif
 
 #ifdef LTC_OMAC
@@ -112,7 +111,7 @@ int poly1305_done(poly1305_state *st, unsigned char *mac, unsigned long *maclen)
 int poly1305_test(void);
 int poly1305_memory(const unsigned char *key, unsigned long keylen, const unsigned char *in, unsigned long inlen, unsigned char *mac, unsigned long *maclen);
 int poly1305_memory_multi(const unsigned char *key, unsigned long keylen, unsigned char *mac, unsigned long *maclen, const unsigned char *in,  unsigned long inlen, ...);
-int poly1305_file(const char *fname, const unsigned char *key, unsigned long keylen, unsigned char *mac, unsigned long *maclen);
+int poly1305_file(const unsigned char *key, unsigned long keylen, const char *fname, unsigned char *mac, unsigned long *maclen);
 int poly1305_test(void);
 #endif /* LTC_POLY1305 */
 
