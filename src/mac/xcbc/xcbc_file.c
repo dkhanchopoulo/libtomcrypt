@@ -50,14 +50,13 @@ int xcbc_file(int cipher,
       return CRYPT_MEM;
    }
 
-   in = fopen(filename, "rb");
-   if (in == NULL) {
-      err = CRYPT_FILE_NOTFOUND;
+   if ((err = xcbc_init(&xcbc, cipher, key, keylen)) != CRYPT_OK) {
       goto LBL_ERR;
    }
 
-   if ((err = xcbc_init(&xcbc, cipher, key, keylen)) != CRYPT_OK) {
-      fclose(in);
+   in = fopen(filename, "rb");
+   if (in == NULL) {
+      err = CRYPT_FILE_NOTFOUND;
       goto LBL_ERR;
    }
 

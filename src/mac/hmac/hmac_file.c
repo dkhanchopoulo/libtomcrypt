@@ -50,17 +50,16 @@ int hmac_file(int hash, const char *fname,
    }
 
    if ((err = hash_is_valid(hash)) != CRYPT_OK) {
-       goto LBL_ERR;
+      goto LBL_ERR;
+   }
+
+   if ((err = hmac_init(&hmac, hash, key, keylen)) != CRYPT_OK) {
+      goto LBL_ERR;
    }
 
    in = fopen(fname, "rb");
    if (in == NULL) {
       err = CRYPT_FILE_NOTFOUND;
-      goto LBL_ERR;
-   }
-
-   if ((err = hmac_init(&hmac, hash, key, keylen)) != CRYPT_OK) {
-      fclose(in);
       goto LBL_ERR;
    }
 

@@ -45,14 +45,13 @@ int poly1305_file(const char *fname, const unsigned char *key, unsigned long key
       return CRYPT_MEM;
    }
 
-   in = fopen(fname, "rb");
-   if (in == NULL) {
-      err = CRYPT_FILE_NOTFOUND;
+   if ((err = poly1305_init(&st, key, keylen)) != CRYPT_OK) {
       goto LBL_ERR;
    }
 
-   if ((err = poly1305_init(&st, key, keylen)) != CRYPT_OK) {
-      fclose(in);
+   in = fopen(fname, "rb");
+   if (in == NULL) {
+      err = CRYPT_FILE_NOTFOUND;
       goto LBL_ERR;
    }
 
