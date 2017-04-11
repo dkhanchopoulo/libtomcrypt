@@ -21,8 +21,8 @@
   @param key      The secret key
   @param keylen   The length of the secret key
   @param fname    The name of the file you wish to POLY1305
-  @param out      [out] The POLY1305 authentication tag
-  @param outlen   [in/out]  The max size and resulting size of the authentication tag
+  @param mac      [out] The POLY1305 authentication tag
+  @param maclen   [in/out]  The max size and resulting size of the authentication tag
   @return CRYPT_OK if successful, CRYPT_NOP if file support has been disabled
 */
 int poly1305_file(const unsigned char *key, unsigned long keylen, const char *fname, unsigned char *mac, unsigned long *maclen)
